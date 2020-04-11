@@ -12,6 +12,7 @@ use carlonicora\minimalism\services\MySQL\exceptions\dbSqlException;
 use carlonicora\minimalism\services\MySQL\exceptions\dbUpdateException;
 use carlonicora\minimalism\services\MySQL\MySQL;
 use Exception;
+use Mediatoolkit\ActiveCampaign\Client;
 use RuntimeException;
 
 class activeCampaign extends abstractService {
@@ -53,6 +54,13 @@ class activeCampaign extends abstractService {
     }
 
     /**
+     * @return Client
+     */
+    private function client(): Client {
+        return new Client($this->configData->url, $this->configData->key);
+    }
+
+    /**
      * @param int $userId
      * @param string $unsubscribeLink
      * @param string $email
@@ -62,6 +70,7 @@ class activeCampaign extends abstractService {
      * @throws Exception
      */
     public function subscribe(int $userId, string $unsubscribeLink, string $email) : void {
+        /*
         $activeContact = array(
             'email' => $email,
             'field[' .$this->configData->unsubscribeField.',0]' => $unsubscribeLink,
@@ -83,6 +92,7 @@ class activeCampaign extends abstractService {
         ];
 
         $this->contacts->update($contact);
+        */
     }
 
     /**
@@ -90,11 +100,16 @@ class activeCampaign extends abstractService {
      * @param string $email
      * @throws Exception
      */
-    public function unsubscribe(int $userId) : void {
+    public function unsubscribe(int $userId, string $email) : void {
         $contact = $this->contacts()->userId($userId);
 
+        $contacts = new \Mediatoolkit\ActiveCampaign\Contacts\Contacts($this->client());
+        $response = $contacts->updateListStatus(['list' => 2, 'contact' => $contact['contactId'], 'status' => 2]);
+
+
+        /*
         $activeContact = array(
-            'id' => $contact['activeCampaignId'],
+            'id' => $contact['contactId'],
             "p[{$this->configData->listId}]" => $this->configData->listId,
             "status[{$this->configData->listId}]" => 2,
             'overwrite' => 0
@@ -105,6 +120,7 @@ class activeCampaign extends abstractService {
         if ($apiResponse['result_code'] === 0) {
             throw new RuntimeException($apiResponse['result_message']);
         }
+        */
     }
 
     /**
@@ -113,6 +129,7 @@ class activeCampaign extends abstractService {
      * @throws Exception
      */
     public function addTag(int $userId, string $tag) : void{
+        /*
         $contact = $this->contacts()->userId($userId);
 
         $activeContact = array(
@@ -125,6 +142,7 @@ class activeCampaign extends abstractService {
         if ($apiResponse['result_code'] === 0) {
             throw new RuntimeException($apiResponse['result_message']);
         }
+        */
     }
 
     /**
