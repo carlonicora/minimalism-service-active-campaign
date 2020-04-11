@@ -8,6 +8,8 @@ use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterfa
 use carlonicora\minimalism\services\activeCampaign\configurations\activeCampaignConfigurations;
 use carlonicora\minimalism\services\activeCampaign\databases\ac\tables\contacts;
 use carlonicora\minimalism\services\MySQL\exceptions\dbConnectionException;
+use carlonicora\minimalism\services\MySQL\exceptions\dbSqlException;
+use carlonicora\minimalism\services\MySQL\exceptions\dbUpdateException;
 use carlonicora\minimalism\services\MySQL\MySQL;
 use Exception;
 use RuntimeException;
@@ -52,13 +54,17 @@ class activeCampaign extends abstractService {
 
     /**
      * @param int $userId
+     * @param string $unsubscribeLink
      * @param string $email
      * @return void
+     * @throws dbSqlException
+     * @throws dbUpdateException
      * @throws Exception
      */
-    public function subscribe(int $userId, string $email) : void {
+    public function subscribe(int $userId, string $unsubscribeLink, string $email) : void {
         $activeContact = array(
             'email' => $email,
+            'field[' .$this->configData->unsubscribeField.',0]' => $unsubscribeLink,
             "p[{$this->configData->listId}]" => $this->configData->listId,
             "status[{$this->configData->listId}]" => 1
         );
@@ -84,12 +90,11 @@ class activeCampaign extends abstractService {
      * @param string $email
      * @throws Exception
      */
-    public function unsubscribe(int $userId, string $email) : void {
+    public function unsubscribe(int $userId) : void {
         $contact = $this->contacts()->userId($userId);
 
         $activeContact = array(
             'id' => $contact['activeCampaignId'],
-            'email' => $email,
             "p[{$this->configData->listId}]" => $this->configData->listId,
             "status[{$this->configData->listId}]" => 2,
             'overwrite' => 0
