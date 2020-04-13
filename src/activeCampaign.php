@@ -12,8 +12,8 @@ use carlonicora\minimalism\services\MySQL\exceptions\dbSqlException;
 use carlonicora\minimalism\services\MySQL\exceptions\dbUpdateException;
 use carlonicora\minimalism\services\MySQL\MySQL;
 use Exception;
-use Mediatoolkit\ActiveCampaign\Client;
-use Mediatoolkit\ActiveCampaign\Tags\Tags;
+use carlonicora\ActiveCampaign\Client;
+use carlonicora\ActiveCampaign\Tags\Tags;
 use RuntimeException;
 
 class activeCampaign extends abstractService {
@@ -69,10 +69,10 @@ class activeCampaign extends abstractService {
     }
 
     /**
-     * @return \Mediatoolkit\ActiveCampaign\Contacts\Contacts
+     * @return \carlonicora\ActiveCampaign\Contacts\Contacts
      */
-    private function activeCampaignContacts() : \Mediatoolkit\ActiveCampaign\Contacts\Contacts {
-        return new \Mediatoolkit\ActiveCampaign\Contacts\Contacts($this->activeCampaignClient());
+    private function activeCampaignContacts() : \carlonicora\ActiveCampaign\Contacts\Contacts {
+        return new \carlonicora\ActiveCampaign\Contacts\Contacts($this->activeCampaignClient());
     }
 
     /**

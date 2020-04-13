@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism-service-active-campaign",
   "description": "Active campaign service for minimalism",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://carlonicora.com",
   "time": "2019-05-14",
   "license": "MIT",
@@ -22,8 +22,9 @@
   },
   "require": {
     "php": "^7.4",
+    "ext-json": "*",
     "carlonicora/minimalism": "~10.0",
     "carlonicora/minimalism-service-mysql": "~1.0",
-    "mediatoolkit/activecampaign-v3-php": "~1.1"
+    "carlonicora/activecampaign-v3-php": "~1.0"
   }
 }
