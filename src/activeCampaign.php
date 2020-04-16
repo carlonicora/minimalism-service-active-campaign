@@ -14,6 +14,7 @@ use carlonicora\minimalism\services\MySQL\MySQL;
 use Exception;
 use carlonicora\ActiveCampaign\Client;
 use carlonicora\ActiveCampaign\Tags\Tags;
+use JsonException;
 use RuntimeException;
 
 class activeCampaign extends abstractService {
@@ -151,21 +152,11 @@ class activeCampaign extends abstractService {
      * @throws Exception
      */
     public function addTag(int $userId, string $tag) : void{
+        $tag = strtolower($tag);
+
         $contact = $this->contacts()->userId($userId);
 
-        $activeCampaignTags = $this->activeCampaignTags();
-        $jsonTags = $activeCampaignTags->listAll([$tag]);
-        $tagsArray = json_decode($jsonTags, true, 512, JSON_THROW_ON_ERROR);
-
-        $tagId = null;
-        foreach ($tagsArray['tags'] as $tagArray){
-            if ($tagArray['tag'] === $tag){
-                $tagId = $tagArray['id'];
-                break;
-            }
-        }
-
-        if ($tagId === null) {
+        if (($tagId = $this->findTagId($tag) ?? $this->createTag($tag)) === null) {
             throw new RuntimeException('Tag not found', 404);
         }
 
@@ -176,5 +167,62 @@ class activeCampaign extends abstractService {
         } catch (Exception $e) {
             throw new RuntimeException('Error contacting the mail service', $e->getCode());
         }
+    }
+
+    /*
+    public function removeTag(int $userId, string $tag): void {
+        $tag = strtolower($tag);
+
+        if (($tagId = $this->findTagId($tag)) === null) {
+            throw new RuntimeException('Tag not found', 404);
+        }
+
+        $contact = $this->contacts()->userId($userId);
+
+        $activeCampaignContacts = $this->activeCampaignContacts();
+
+        try {
+            $activeCampaignContacts->untag($contact['contactId'], $tagId);
+        } catch (Exception $e) {
+            throw new RuntimeException('Error contacting the mail service', $e->getCode());
+        }
+    }
+     */
+
+    /**
+     * @param string $tag
+     * @return int|null
+     * @throws JsonException
+     */
+    public function findTagId(string $tag) : ?int {
+        $tag = strtolower($tag);
+        $activeCampaignTags = $this->activeCampaignTags();
+
+        $jsonTags = $activeCampaignTags->listAll([$tag]);
+        $tagsArray = json_decode($jsonTags, true, 512, JSON_THROW_ON_ERROR);$tagId = null;
+
+        foreach ($tagsArray['tags'] as $tagArray){
+            if ($tagArray['tag'] === $tag){
+                return $tagArray['id'];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $tag
+     * @return int
+     * @throws JsonException
+     */
+    public function createTag(string $tag) : int {
+        $tag = strtolower($tag);
+
+        $activeCampaignTags = $this->activeCampaignTags();
+
+        $jsonTags = $activeCampaignTags->create($tag);
+        $newTag = json_decode($jsonTags, true, 512, JSON_THROW_ON_ERROR);
+
+        return $newTag['id'];
     }
 }
