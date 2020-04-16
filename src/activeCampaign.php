@@ -2,14 +2,14 @@
 namespace carlonicora\minimalism\services\activeCampaign;
 
 use carlonicora\minimalism\core\services\abstracts\abstractService;
+use carlonicora\minimalism\core\services\exceptions\configurationException;
 use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterface;
 use carlonicora\minimalism\services\activeCampaign\configurations\activeCampaignConfigurations;
 use carlonicora\minimalism\services\activeCampaign\databases\ac\tables\contacts;
-use carlonicora\minimalism\services\MySQL\exceptions\dbConnectionException;
+use carlonicora\minimalism\services\MySQL\exceptions\dbRecordNotFoundException;
 use carlonicora\minimalism\services\MySQL\exceptions\dbSqlException;
-use carlonicora\minimalism\services\MySQL\exceptions\dbUpdateException;
 use carlonicora\minimalism\services\MySQL\MySQL;
 use Exception;
 use carlonicora\ActiveCampaign\Client;
@@ -42,7 +42,7 @@ class activeCampaign extends abstractService {
     /**
      * @return contacts
      * @throws serviceNotFoundException
-     * @throws dbConnectionException
+     * @throws configurationException
      */
     private function contacts() : contacts {
         if ($this->contacts === null){
@@ -89,7 +89,6 @@ class activeCampaign extends abstractService {
      * @param string $unsubscribeLink
      * @return void
      * @throws dbSqlException
-     * @throws dbUpdateException
      * @throws Exception
      */
     public function subscribe(int $userId, string $email, string $unsubscribeLink) : void {
@@ -169,7 +168,14 @@ class activeCampaign extends abstractService {
         }
     }
 
-    /*
+    /**
+     * @param int $userId
+     * @param string $tag
+     * @throws JsonException
+     * @throws configurationException
+     * @throws dbRecordNotFoundException
+     * @throws serviceNotFoundException
+     */
     public function removeTag(int $userId, string $tag): void {
         $tag = strtolower($tag);
 
@@ -181,13 +187,28 @@ class activeCampaign extends abstractService {
 
         $activeCampaignContacts = $this->activeCampaignContacts();
 
+        $retrievedTagsJson = $activeCampaignContacts->getTags($contact['contactId']);
+        $retrievedTags = json_decode($retrievedTagsJson, true, 512, JSON_THROW_ON_ERROR);
+
+        $contactTagId = null;
+
+        foreach ($retrievedTags['contactTags'] ?? [] as $contactTag){
+            if ($contactTag['tag'] === $tagId){
+                $contactTagId = $contactTag['id'];
+                break;
+            }
+        }
+
+        if ($contactTagId === null){
+            return;
+        }
+
         try {
-            $activeCampaignContacts->untag($contact['contactId'], $tagId);
+            $activeCampaignContacts->untag($contactTagId);
         } catch (Exception $e) {
             throw new RuntimeException('Error contacting the mail service', $e->getCode());
         }
     }
-     */
 
     /**
      * @param string $tag
