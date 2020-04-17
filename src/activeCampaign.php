@@ -94,28 +94,24 @@ class activeCampaign extends abstractService {
     public function subscribe(int $userId, string $email, string $unsubscribeLink) : void {
         $activeCampaignContacts = $this->activeCampaignContacts();
 
-        try {
-            $retrievedContactJson = $activeCampaignContacts->sync([
-                'email' => $email
-            ]);
+        $retrievedContactJson = $activeCampaignContacts->sync([
+            'email' => $email
+        ]);
 
-            $retrievedContact = json_decode($retrievedContactJson, true, 512, JSON_THROW_ON_ERROR);
-            $contactId = $retrievedContact['contact']['id'];
+        $retrievedContact = json_decode($retrievedContactJson, true, 512, JSON_THROW_ON_ERROR);
+        $contactId = $retrievedContact['contact']['id'];
 
-            $activeCampaignContacts->updateListStatus([
-                'list' => $this->configData->listId,
-                'contact' => $contactId,
-                'status' => 1
-            ]);
+        $activeCampaignContacts->updateListStatus([
+            'list' => $this->configData->listId,
+            'contact' => $contactId,
+            'status' => 1
+        ]);
 
-            $activeCampaignContacts->createCustomFieldValue(
-                $contactId,
-                $this->configData->unsubscribeField,
-                $unsubscribeLink
-            );
-        } catch (Exception $e) {
-            throw new RuntimeException('Error contacting the mail service', $e->getCode());
-        }
+        $activeCampaignContacts->createCustomFieldValue(
+            $contactId,
+            $this->configData->unsubscribeField,
+            $unsubscribeLink
+        );
 
         $contact = [
             'userId' => $userId,
@@ -134,15 +130,11 @@ class activeCampaign extends abstractService {
 
         $activeCampaignContacts = $this->activeCampaignContacts();
 
-        try {
-            $activeCampaignContacts->updateListStatus([
-                'list' => $this->configData->listId,
-                'contact' => $contact['contactId'],
-                'status' => 2
-            ]);
-        } catch (Exception $e) {
-            throw new RuntimeException('Error contacting the mail service', $e->getCode());
-        }
+        $activeCampaignContacts->updateListStatus([
+            'list' => $this->configData->listId,
+            'contact' => $contact['contactId'],
+            'status' => 2
+        ]);
     }
 
     /**
@@ -161,20 +153,14 @@ class activeCampaign extends abstractService {
 
         $activeCampaignContacts = $this->activeCampaignContacts();
 
-        try {
-            $activeCampaignContacts->tag($contact['contactId'], $tagId);
-        } catch (Exception $e) {
-            throw new RuntimeException('Error contacting the mail service', $e->getCode());
-        }
+        $activeCampaignContacts->tag($contact['contactId'], $tagId);
     }
 
     /**
      * @param int $userId
      * @param string $tag
      * @throws JsonException
-     * @throws configurationException
-     * @throws dbRecordNotFoundException
-     * @throws serviceNotFoundException
+     * @throws configurationException|dbRecordNotFoundException|serviceNotFoundException|dbSqlException
      */
     public function removeTag(int $userId, string $tag): void {
         $tag = strtolower($tag);
@@ -203,11 +189,7 @@ class activeCampaign extends abstractService {
             return;
         }
 
-        try {
-            $activeCampaignContacts->untag($contactTagId);
-        } catch (Exception $e) {
-            throw new RuntimeException('Error contacting the mail service', $e->getCode());
-        }
+        $activeCampaignContacts->untag($contactTagId);
     }
 
     /**
