@@ -1,12 +1,12 @@
 {
   "name": "carlonicora/minimalism-service-active-campaign",
   "description": "Active campaign service for minimalism",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "homepage": "https://carlonicora.com",
   "time": "2019-05-14",
   "license": "MIT",
   "type": "library",
-  "minimum-stability": "beta",
+  "minimum-stability": "stable",
   "authors": [
     {
       "name": "Carlo Nicora",

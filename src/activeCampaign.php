@@ -118,7 +118,7 @@ class activeCampaign extends abstractService {
             'contactId' => $contactId
         ];
 
-        $this->contacts->update($contact);
+        $this->contacts()->update($contact);
     }
 
     /**
