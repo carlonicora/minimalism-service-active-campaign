@@ -228,4 +228,12 @@ class activeCampaign extends abstractService {
 
         return $newTag['id'];
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function destroyStatics(): void
+    {
+        $this->client = null;
+    }
 }
