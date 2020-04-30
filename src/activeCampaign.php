@@ -226,7 +226,7 @@ class activeCampaign extends abstractService {
         $jsonTags = $activeCampaignTags->create($tag);
         $newTag = json_decode($jsonTags, true, 512, JSON_THROW_ON_ERROR);
 
-        return $newTag['id'];
+        return $newTag['tag']['id'];
     }
 
     /**
