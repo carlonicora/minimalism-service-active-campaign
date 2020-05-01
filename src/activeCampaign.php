@@ -196,6 +196,7 @@ class activeCampaign extends abstractService {
      * @param string $tag
      * @return int|null
      * @throws JsonException
+     * @noinspection PhpDocRedundantThrowsInspection
      */
     public function findTagId(string $tag) : ?int {
         $tag = strtolower($tag);
@@ -217,6 +218,7 @@ class activeCampaign extends abstractService {
      * @param string $tag
      * @return int
      * @throws JsonException
+     * @noinspection PhpDocRedundantThrowsInspection
      */
     public function createTag(string $tag) : int {
         $tag = strtolower($tag);
