@@ -24,4 +24,18 @@ class contacts extends abstractDatabaseManager {
 
         return $this->runReadSingle($sql, $parameters);
     }
+
+    /**
+     * @param int $contactId
+     * @return array
+     * @throws dbRecordNotFoundException
+     * @throws dbSqlException
+     */
+    public function contactId(int $contactId) : array {
+        $sql = 'SELECT * FROM contacts WHERE contactId=?;';
+        $parameters = ['i', $contactId];
+
+
+        return $this->runReadSingle($sql, $parameters);
+    }
 }
