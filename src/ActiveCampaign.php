@@ -1,28 +1,29 @@
 <?php
-namespace carlonicora\minimalism\services\activeCampaign;
+namespace Carlonicora\Minimalism\Services\ActiveCampaign;
 
-use carlonicora\minimalism\core\services\abstracts\abstractService;
-use carlonicora\minimalism\core\services\exceptions\configurationException;
-use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
-use carlonicora\minimalism\core\services\factories\servicesFactory;
-use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterface;
-use carlonicora\minimalism\services\activeCampaign\configurations\activeCampaignConfigurations;
-use carlonicora\minimalism\services\activeCampaign\databases\ac\tables\contacts;
-use carlonicora\minimalism\services\MySQL\exceptions\dbRecordNotFoundException;
-use carlonicora\minimalism\services\MySQL\exceptions\dbSqlException;
-use carlonicora\minimalism\services\MySQL\MySQL;
+use carlonicora\ActiveCampaign\Contacts\Contacts;
+use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractService;
+use Carlonicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
+use Carlonicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
+use Carlonicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use Carlonicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
+use Carlonicora\Minimalism\Services\ActiveCampaign\Databases\Ac\Tables\ContactsTable;
+use Carlonicora\Minimalism\Services\ActiveCampaign\Configurations\ActiveCampaignConfigurations;
+use Carlonicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
+use Carlonicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
+use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use Exception;
 use carlonicora\ActiveCampaign\Client;
 use carlonicora\ActiveCampaign\Tags\Tags;
 use JsonException;
 use RuntimeException;
 
-class activeCampaign extends abstractService {
-    /** @var activeCampaignConfigurations  */
-    private activeCampaignConfigurations $configData;
+class ActiveCampaign extends AbstractService {
+    /** @var ActiveCampaignConfigurations */
+    private ActiveCampaignConfigurations $configData;
 
-    /** @var contacts|null  */
-    private ?contacts $contacts=null;
+    /** @var ContactsTable|null  */
+    private ?ContactsTable $contacts=null;
 
     /** @var Client|null  */
     private ?Client $client=null;
@@ -40,17 +41,16 @@ class activeCampaign extends abstractService {
     }
 
     /**
-     * @return contacts
-     * @throws serviceNotFoundException
-     * @throws configurationException
+     * @return ContactsTable
+     * @throws Exception
      */
-    private function contacts() : contacts {
+    private function contacts() : ContactsTable {
         if ($this->contacts === null){
             /** @var MySQL $mysql */
             $mysql = $this->services->service(MySQL::class);
 
-            /** @var contacts $contacts */
-            $contacts = $mysql->create(contacts::class);
+            /** @var ContactsTable $contacts */
+            $contacts = $mysql->create(ContactsTable::class);
 
             $this->contacts = $contacts;
         }
@@ -70,10 +70,10 @@ class activeCampaign extends abstractService {
     }
 
     /**
-     * @return \carlonicora\ActiveCampaign\Contacts\Contacts
+     * @return Contacts
      */
-    private function activeCampaignContacts() : \carlonicora\ActiveCampaign\Contacts\Contacts {
-        return new \carlonicora\ActiveCampaign\Contacts\Contacts($this->activeCampaignClient());
+    private function activeCampaignContacts() : Contacts {
+        return new Contacts($this->activeCampaignClient());
     }
 
     /**
@@ -161,6 +161,7 @@ class activeCampaign extends abstractService {
      * @param string $tag
      * @throws JsonException
      * @throws configurationException|dbRecordNotFoundException|serviceNotFoundException|dbSqlException
+     * @throws Exception
      */
     public function removeTag(int $userId, string $tag): void {
         $tag = strtolower($tag);

@@ -1,10 +1,10 @@
 <?php
-namespace carlonicora\minimalism\services\activeCampaign\configurations;
+namespace Carlonicora\Minimalism\Services\ActiveCampaign\Configurations;
 
 use carlonicora\minimalism\core\services\abstracts\abstractServiceConfigurations;
-use carlonicora\minimalism\core\services\exceptions\configurationException;
+use Carlonicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 
-class activeCampaignConfigurations extends abstractServiceConfigurations {
+class ActiveCampaignConfigurations extends AbstractServiceConfigurations {
     /** @var string  */
     public string $url;
 
