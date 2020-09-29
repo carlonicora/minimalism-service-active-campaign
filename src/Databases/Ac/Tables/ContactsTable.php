@@ -24,4 +24,17 @@ class ContactsTable extends AbstractTable {
 
         return $this->functions->runReadSingle();
     }
+
+    /**
+     * @param int $contactId
+     * @return array
+     * @throws DbRecordNotFoundException
+     * @throws DbSqlException
+     */
+    public function contactId(int $contactId) : array {
+        $this->sql = 'SELECT * FROM contacts WHERE contactId=?;';
+        $this->parameters = ['i', $contactId];
+
+        return $this->functions->runReadSingle();
+    }
 }
