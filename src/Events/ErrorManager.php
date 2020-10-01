@@ -1,5 +1,5 @@
 <?php
-namespace Carlonicora\Minimalism\Services\ActiveCampaign\Events;
+namespace CarloNicora\Minimalism\Services\ActiveCampaign\Events;
 
 use CarloNicora\Minimalism\Core\Events\Abstracts\AbstractErrorEvent;
 use CarloNicora\Minimalism\Core\Events\Interfaces\EventInterface;

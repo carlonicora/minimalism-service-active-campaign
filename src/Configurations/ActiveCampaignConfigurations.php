@@ -1,8 +1,8 @@
 <?php
-namespace Carlonicora\Minimalism\Services\ActiveCampaign\Configurations;
+namespace CarloNicora\Minimalism\Services\ActiveCampaign\Configurations;
 
 use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractServiceConfigurations;
-use Carlonicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
+use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 
 class ActiveCampaignConfigurations extends AbstractServiceConfigurations {
     /** @var string  */

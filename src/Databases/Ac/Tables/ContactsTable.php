@@ -1,5 +1,5 @@
 <?php
-namespace Carlonicora\Minimalism\Services\ActiveCampaign\Databases\Ac\Tables;
+namespace CarloNicora\Minimalism\Services\ActiveCampaign\Databases\Ac\Tables;
 
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
 use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;

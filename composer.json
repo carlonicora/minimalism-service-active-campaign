@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism-service-active-campaign",
   "description": "Active campaign service for minimalism",
-  "version": "2.0.1-beta2",
+  "version": "2.0.1-beta3",
   "homepage": "https://carlonicora.com",
   "time": "2019-05-14",
   "license": "MIT",
@@ -17,7 +17,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Carlonicora\\Minimalism\\Services\\ActiveCampaign\\":"src/"
+      "CarloNicora\\Minimalism\\Services\\ActiveCampaign\\":"src/"
     }
   },
   "require": {

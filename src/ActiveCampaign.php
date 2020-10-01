@@ -1,16 +1,16 @@
 <?php
-namespace Carlonicora\Minimalism\Services\ActiveCampaign;
+namespace CarloNicora\Minimalism\Services\ActiveCampaign;
 
 use carlonicora\ActiveCampaign\Contacts\Contacts;
 use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractService;
-use Carlonicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
-use Carlonicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
-use Carlonicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use Carlonicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
-use Carlonicora\Minimalism\Services\ActiveCampaign\Databases\Ac\Tables\ContactsTable;
-use Carlonicora\Minimalism\Services\ActiveCampaign\Configurations\ActiveCampaignConfigurations;
-use Carlonicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
-use Carlonicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
+use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
+use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
+use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
+use CarloNicora\Minimalism\Services\ActiveCampaign\Databases\Ac\Tables\ContactsTable;
+use CarloNicora\Minimalism\Services\ActiveCampaign\Configurations\ActiveCampaignConfigurations;
+use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
+use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
 use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use Exception;
 use carlonicora\ActiveCampaign\Client;
