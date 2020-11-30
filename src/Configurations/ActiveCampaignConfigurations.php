@@ -16,9 +16,6 @@ class ActiveCampaignConfigurations extends AbstractServiceConfigurations {
     /** @var string  */
     public string $listId;
 
-    /** @var string  */
-    public string $unsubscribeField;
-
     /**
      * activeCampaignConfigurations constructor.
      * @throws Exception
@@ -36,11 +33,6 @@ class ActiveCampaignConfigurations extends AbstractServiceConfigurations {
 
         if (!($this->listId = getenv('MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID'))){
             MinimalismErrorEvents::CONFIGURATION_ERROR('MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID is a required configuration')
-                ->throw(ConfigurationException::class);
-        }
-
-        if (!($this->unsubscribeField = getenv('MINIMALISM_SERVICE_ACTIVECAMPAIGN_UNSUBSCRIBE_LINK_FIELD'))){
-            MinimalismErrorEvents::CONFIGURATION_ERROR('MINIMALISM_SERVICE_ACTIVECAMPAIGN_UNSUBSCRIBE_LINK_FIELD is a required configuration')
                 ->throw(ConfigurationException::class);
         }
 
