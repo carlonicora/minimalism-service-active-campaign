@@ -86,12 +86,11 @@ class ActiveCampaign extends AbstractService {
     /**
      * @param int $userId
      * @param string $email
-     * @param string $unsubscribeLink
      * @return void
      * @throws dbSqlException
      * @throws Exception
      */
-    public function subscribe(int $userId, string $email, string $unsubscribeLink) : void {
+    public function subscribe(int $userId, string $email) : void {
         $activeCampaignContacts = $this->activeCampaignContacts();
 
         $retrievedContactJson = $activeCampaignContacts->sync([
@@ -106,12 +105,6 @@ class ActiveCampaign extends AbstractService {
             'contact' => $contactId,
             'status' => 1
         ]);
-
-        $activeCampaignContacts->createCustomFieldValue(
-            $contactId,
-            $this->configData->unsubscribeField,
-            $unsubscribeLink
-        );
 
         $contact = [
             'userId' => $userId,
