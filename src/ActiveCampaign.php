@@ -2,26 +2,18 @@
 namespace CarloNicora\Minimalism\Services\ActiveCampaign;
 
 use carlonicora\ActiveCampaign\Contacts\Contacts;
-use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractService;
-use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
-use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
-use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
+use CarloNicora\Minimalism\Interfaces\DataInterface;
+use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Interfaces\TableInterface;
 use CarloNicora\Minimalism\Services\ActiveCampaign\Databases\Ac\Tables\ContactsTable;
-use CarloNicora\Minimalism\Services\ActiveCampaign\Configurations\ActiveCampaignConfigurations;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
-use CarloNicora\Minimalism\Services\MySQL\MySQL;
 use Exception;
 use carlonicora\ActiveCampaign\Client;
 use carlonicora\ActiveCampaign\Tags\Tags;
 use JsonException;
 use RuntimeException;
 
-class ActiveCampaign extends AbstractService {
-    /** @var ActiveCampaignConfigurations */
-    private ActiveCampaignConfigurations $configData;
-
+class ActiveCampaign implements ServiceInterface
+{
     /** @var ContactsTable|null  */
     private ?ContactsTable $contacts=null;
 
@@ -29,28 +21,31 @@ class ActiveCampaign extends AbstractService {
     private ?Client $client=null;
 
     /**
-     * activeCampaign constructor.
-     * @param serviceConfigurationsInterface $configData
-     * @param servicesFactory $services
+     * ActiveCampaign constructor.
+     * @param DataInterface $data
+     * @param string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_URL
+     * @param string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_KEY
+     * @param string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID
+     * @param string $MINIMALISM_SERVICE_MYSQL
      */
-    public function __construct(serviceConfigurationsInterface $configData, servicesFactory $services) {
-        parent::__construct($configData, $services);
-
-        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
-        $this->configData = $configData;
+    public function __construct(
+        private DataInterface $data,
+        private string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_URL,
+        private string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_KEY,
+        private string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID,
+        private string $MINIMALISM_SERVICE_MYSQL,
+    ) {
     }
 
     /**
-     * @return ContactsTable
+     * @return ContactsTable|TableInterface
      * @throws Exception
      */
-    private function contacts() : ContactsTable {
+    private function contacts() : ContactsTable|TableInterface
+    {
         if ($this->contacts === null){
-            /** @var MySQL $mysql */
-            $mysql = $this->services->service(MySQL::class);
-
-            /** @var ContactsTable $contacts */
-            $contacts = $mysql->create(ContactsTable::class);
+            /** @var ContactsTable|TableInterface $contacts */
+            $contacts = $this->data->create(ContactsTable::class);
 
             $this->contacts = $contacts;
         }
@@ -63,7 +58,10 @@ class ActiveCampaign extends AbstractService {
      */
     private function activeCampaignClient(): Client {
         if ($this->client === null) {
-            $this->client = new Client($this->configData->url, $this->configData->key);
+            $this->client = new Client(
+                $this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_URL,
+                $this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_KEY,
+            );
         }
 
         return $this->client;
@@ -87,7 +85,6 @@ class ActiveCampaign extends AbstractService {
      * @param int $userId
      * @param string $email
      * @return void
-     * @throws dbSqlException
      * @throws Exception
      */
     public function subscribe(int $userId, string $email) : void {
@@ -101,7 +98,7 @@ class ActiveCampaign extends AbstractService {
         $contactId = $retrievedContact['contact']['id'];
 
         $activeCampaignContacts->updateListStatus([
-            'list' => $this->configData->listId,
+            'list' => $this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID,
             'contact' => $contactId,
             'status' => 1
         ]);
@@ -124,7 +121,7 @@ class ActiveCampaign extends AbstractService {
         $activeCampaignContacts = $this->activeCampaignContacts();
 
         $activeCampaignContacts->updateListStatus([
-            'list' => $this->configData->listId,
+            'list' => $this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID,
             'contact' => $contact['contactId'],
             'status' => 2
         ]);
@@ -153,7 +150,6 @@ class ActiveCampaign extends AbstractService {
      * @param int $userId
      * @param string $tag
      * @throws JsonException
-     * @throws configurationException|dbRecordNotFoundException|serviceNotFoundException|dbSqlException
      * @throws Exception
      */
     public function removeTag(int $userId, string $tag): void {
@@ -226,10 +222,12 @@ class ActiveCampaign extends AbstractService {
     }
 
     /**
-     * @inheritDoc
+     *
      */
-    public function destroyStatics(): void
-    {
-        $this->client = null;
-    }
+    public function initialise(): void {}
+
+    /**
+     *
+     */
+    public function destroy(): void {}
 }

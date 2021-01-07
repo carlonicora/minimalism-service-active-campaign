@@ -1,12 +1,12 @@
 <?php
 namespace CarloNicora\Minimalism\Services\ActiveCampaign\Databases\Ac\Tables;
 
-use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractTable;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbRecordNotFoundException;
-use CarloNicora\Minimalism\Services\MySQL\Exceptions\DbSqlException;
+use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
+use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
 
-class ContactsTable extends AbstractTable {
+class ContactsTable extends AbstractMySqlTable
+{
     /** @var array  */
     protected array $fields = [
         'userId'    => FieldInterface::INTEGER
@@ -18,8 +18,7 @@ class ContactsTable extends AbstractTable {
     /**
      * @param int $userId
      * @return array
-     * @throws DbRecordNotFoundException
-     * @throws DbSqlException
+     * @throws RecordNotFoundException
      */
     public function userId(int $userId) : array {
         $this->sql = 'SELECT * FROM contacts WHERE userId=?;';
@@ -31,8 +30,7 @@ class ContactsTable extends AbstractTable {
     /**
      * @param int $contactId
      * @return array
-     * @throws DbRecordNotFoundException
-     * @throws DbSqlException
+     * @throws RecordNotFoundException
      */
     public function contactId(int $contactId) : array {
         $this->sql = 'SELECT * FROM contacts WHERE contactId=?;';

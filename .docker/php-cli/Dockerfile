@@ -1,13 +1,11 @@
-FROM php:7.4-cli-alpine as base
+FROM php:8-cli-alpine
 
 RUN apk update \
-    && apk add --no-cache curl g++ make autoconf bash
+    && apk add --no-cache curl g++ make git autoconf bash
 
-RUN docker-php-ext-install mysqli bcmath \
-    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && docker-php-source extract \
+RUN docker-php-ext-install mysqli sockets \
     && pecl install redis \
     && docker-php-ext-enable redis \
-    && docker-php-source delete \
-    && addgroup -g 1000 -S developers \
-    && adduser -u 1000 -S developer -G developers
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+COPY ./php-cli/configurations/* /usr/local/etc/php/conf.d/

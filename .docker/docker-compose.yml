@@ -3,7 +3,7 @@ version: '3.8'
 services:
   minimalism-service-active-campaign:
     container_name: minimalism-service-active-campaign
-    image: carlonicora/minimalism-service-active-campaign:2.0
+    image: phlow/minimalism-service-active-campaign:3.0
     build:
       context: .
       dockerfile: ./php-cli/Dockerfile
@@ -18,4 +18,4 @@ services:
 networks:
   default_network:
     driver: bridge
-    name: carlonicora
+    name: phlow
