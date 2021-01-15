@@ -47,9 +47,11 @@ class ActiveCampaign implements ServiceInterface
         $activeCampaignList = $this->activeCampaignClient()
             ->getList($this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID);
 
-        $this->getContact($email)->subscribe(
-            $activeCampaignList
-        );
+        if ($activeCampaignList !== null) {
+            $this->getContact($email)->subscribe(
+                $activeCampaignList->id
+            );
+        }
     }
 
     /**
@@ -60,9 +62,11 @@ class ActiveCampaign implements ServiceInterface
         $activeCampaignList = $this->activeCampaignClient()
             ->getList($this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID);
 
-        $this->getContact($email)->unsubscribe(
-            $activeCampaignList
-        );
+        if ($activeCampaignList !== null) {
+            $this->getContact($email)->unsubscribe(
+                $activeCampaignList->id
+            );
+        }
     }
 
     /**
