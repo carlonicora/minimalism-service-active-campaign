@@ -1,64 +1,34 @@
 <?php
 namespace CarloNicora\Minimalism\Services\ActiveCampaign;
 
-use carlonicora\ActiveCampaign\Contacts\Contacts;
-use CarloNicora\Minimalism\Interfaces\DataInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
-use CarloNicora\Minimalism\Interfaces\TableInterface;
-use CarloNicora\Minimalism\Services\ActiveCampaign\Databases\Ac\Tables\ContactsTable;
 use Exception;
-use carlonicora\ActiveCampaign\Client;
-use carlonicora\ActiveCampaign\Tags\Tags;
-use JsonException;
-use RuntimeException;
+use TestMonitor\ActiveCampaign\Resources\Contact;
 
 class ActiveCampaign implements ServiceInterface
 {
-    /** @var ContactsTable|null  */
-    private ?ContactsTable $contacts=null;
-
-    /** @var Client|null  */
-    private ?Client $client=null;
+    /** @var \TestMonitor\ActiveCampaign\ActiveCampaign|null  */
+    private ?\TestMonitor\ActiveCampaign\ActiveCampaign $client=null;
 
     /**
      * ActiveCampaign constructor.
-     * @param DataInterface $data
      * @param string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_URL
      * @param string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_KEY
      * @param string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID
-     * @param string $MINIMALISM_SERVICE_MYSQL
      */
     public function __construct(
-        private DataInterface $data,
         private string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_URL,
         private string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_KEY,
         private string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID,
-        private string $MINIMALISM_SERVICE_MYSQL,
     ) {
     }
 
     /**
-     * @return ContactsTable|TableInterface
-     * @throws Exception
+     * @return \TestMonitor\ActiveCampaign\ActiveCampaign
      */
-    private function contacts() : ContactsTable|TableInterface
-    {
-        if ($this->contacts === null){
-            /** @var ContactsTable|TableInterface $contacts */
-            $contacts = $this->data->create(ContactsTable::class);
-
-            $this->contacts = $contacts;
-        }
-
-        return $this->contacts;
-    }
-
-    /**
-     * @return Client
-     */
-    private function activeCampaignClient(): Client {
+    private function activeCampaignClient(): \TestMonitor\ActiveCampaign\ActiveCampaign {
         if ($this->client === null) {
-            $this->client = new Client(
+            $this->client = new \TestMonitor\ActiveCampaign\ActiveCampaign(
                 $this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_URL,
                 $this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_KEY,
             );
@@ -68,157 +38,75 @@ class ActiveCampaign implements ServiceInterface
     }
 
     /**
-     * @return Contacts
-     */
-    private function activeCampaignContacts() : Contacts {
-        return new Contacts($this->activeCampaignClient());
-    }
-
-    /**
-     * @return Tags
-     */
-    private function activeCampaignTags() : Tags {
-        return new Tags($this->activeCampaignClient());
-    }
-
-    /**
-     * @param int $userId
      * @param string $email
      * @return void
      * @throws Exception
      */
-    public function subscribe(int $userId, string $email) : void {
-        $activeCampaignContacts = $this->activeCampaignContacts();
+    public function subscribe(string $email) : void
+    {
+        $activeCampaignList = $this->activeCampaignClient()
+            ->getList($this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID);
 
-        $retrievedContactJson = $activeCampaignContacts->sync([
-            'email' => $email
-        ]);
-
-        $retrievedContact = json_decode($retrievedContactJson, true, 512, JSON_THROW_ON_ERROR);
-        $contactId = $retrievedContact['contact']['id'];
-
-        $activeCampaignContacts->updateListStatus([
-            'list' => $this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID,
-            'contact' => $contactId,
-            'status' => 1
-        ]);
-
-        $contact = [
-            'userId' => $userId,
-            'contactId' => $contactId
-        ];
-
-        $this->contacts()->update($contact);
+        $this->getContact($email)->subscribe(
+            $activeCampaignList
+        );
     }
 
     /**
-     * @param int $userId
+     * @param string $email
      * @throws Exception
      */
-    public function unsubscribe(int $userId) : void {
-        $contact = $this->contacts()->userId($userId);
+    public function unsubscribe(string $email) : void {
+        $activeCampaignList = $this->activeCampaignClient()
+            ->getList($this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID);
 
-        $activeCampaignContacts = $this->activeCampaignContacts();
-
-        $activeCampaignContacts->updateListStatus([
-            'list' => $this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID,
-            'contact' => $contact['contactId'],
-            'status' => 2
-        ]);
+        $this->getContact($email)->unsubscribe(
+            $activeCampaignList
+        );
     }
 
     /**
-     * @param int $userId
+     * @param string $email
      * @param string $tag
      * @throws Exception
      */
-    public function addTag(int $userId, string $tag) : void{
-        $tag = strtolower($tag);
-
-        $contact = $this->contacts()->userId($userId);
-
-        if (($tagId = $this->findTagId($tag) ?? $this->createTag($tag)) === null) {
-            throw new RuntimeException('Tag not found', 404);
-        }
-
-        $activeCampaignContacts = $this->activeCampaignContacts();
-
-        $activeCampaignContacts->tag($contact['contactId'], $tagId);
+    public function addTag(string $email, string $tag) : void
+    {
+        $this->activeCampaignClient()->addTagsToContact(
+            $this->getContact($email),
+            [strtolower($tag)]
+        );
     }
 
     /**
-     * @param int $userId
+     * @param string $email
      * @param string $tag
-     * @throws JsonException
      * @throws Exception
      */
-    public function removeTag(int $userId, string $tag): void {
-        $tag = strtolower($tag);
+    public function removeTag(string $email, string $tag): void
+    {
+        $activeCampaignTag = $this->activeCampaignClient()
+            ->findOrCreateTag(strtolower($tag));
 
-        if (($tagId = $this->findTagId($tag)) === null) {
-            throw new RuntimeException('Tag not found', 404);
-        }
-
-        $contact = $this->contacts()->userId($userId);
-
-        $activeCampaignContacts = $this->activeCampaignContacts();
-
-        $retrievedTagsJson = $activeCampaignContacts->getTags($contact['contactId']);
-        $retrievedTags = json_decode($retrievedTagsJson, true, 512, JSON_THROW_ON_ERROR);
-
-        $contactTagId = null;
-
-        foreach ($retrievedTags['contactTags'] ?? [] as $contactTag){
-            if ($contactTag['tag'] === $tagId){
-                $contactTagId = $contactTag['id'];
-                break;
-            }
-        }
-
-        if ($contactTagId === null){
-            return;
-        }
-
-        $activeCampaignContacts->untag($contactTagId);
+        $this->activeCampaignClient()->removeTagFromContact(
+            $this->getContact($email),
+            $activeCampaignTag
+        );
     }
 
     /**
-     * @param string $tag
-     * @return int|null
-     * @throws JsonException
-     * @noinspection PhpDocRedundantThrowsInspection
+     * @param string $email
+     * @return Contact
      */
-    public function findTagId(string $tag) : ?int {
-        $tag = strtolower($tag);
-        $activeCampaignTags = $this->activeCampaignTags();
-
-        $jsonTags = $activeCampaignTags->listAll([$tag]);
-        $tagsArray = json_decode($jsonTags, true, 512, JSON_THROW_ON_ERROR);$tagId = null;
-
-        foreach ($tagsArray['tags'] as $tagArray){
-            if ($tagArray['tag'] === $tag){
-                return $tagArray['id'];
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $tag
-     * @return int
-     * @throws JsonException
-     * @noinspection PhpDocRedundantThrowsInspection
-     */
-    public function createTag(string $tag) : int {
-        $tag = strtolower($tag);
-
-        $activeCampaignTags = $this->activeCampaignTags();
-
-        $jsonTags = $activeCampaignTags->create($tag);
-        $newTag = json_decode($jsonTags, true, 512, JSON_THROW_ON_ERROR);
-
-        return $newTag['tag']['id'];
+    private function getContact(string $email): Contact
+    {
+        return $this->activeCampaignClient()
+            ->findOrCreateContact(
+                $email,
+                '',
+                '',
+                ''
+            );
     }
 
     /**

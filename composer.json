@@ -1,12 +1,12 @@
 {
   "name": "carlonicora/minimalism-service-active-campaign",
   "description": "Active campaign service for minimalism",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "homepage": "https://carlonicora.com",
   "time": "2019-05-14",
   "license": "MIT",
   "type": "library",
-  "minimum-stability": "beta",
+  "minimum-stability": "stable",
   "authors": [
     {
       "name": "Carlo Nicora",
@@ -25,6 +25,6 @@
     "ext-json": "*",
     "carlonicora/minimalism": "~12.0",
     "carlonicora/minimalism-service-mysql": "~4.0",
-    "carlonicora/activecampaign-v3-php": "~1.0"
+    "testmonitor/activecampaign": "~4.0"
   }
 }
