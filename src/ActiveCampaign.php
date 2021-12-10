@@ -1,11 +1,11 @@
 <?php
 namespace CarloNicora\Minimalism\Services\ActiveCampaign;
 
-use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Abstracts\AbstractService;
 use Exception;
 use TestMonitor\ActiveCampaign\Resources\Contact;
 
-class ActiveCampaign implements ServiceInterface
+class ActiveCampaign extends AbstractService
 {
     /** @var \TestMonitor\ActiveCampaign\ActiveCampaign|null  */
     private ?\TestMonitor\ActiveCampaign\ActiveCampaign $client=null;
@@ -21,6 +21,7 @@ class ActiveCampaign implements ServiceInterface
         private string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_KEY,
         private string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID,
     ) {
+        parent::__construct();
     }
 
     /**
