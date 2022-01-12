@@ -22,7 +22,6 @@ class ActiveCampaign extends AbstractService
         private string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID,
     )
     {
-        parent::__construct();
     }
 
     /**
