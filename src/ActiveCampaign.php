@@ -7,8 +7,8 @@ use TestMonitor\ActiveCampaign\Resources\Contact;
 
 class ActiveCampaign extends AbstractService
 {
-    /** @var \TestMonitor\ActiveCampaign\ActiveCampaign|null  */
-    private ?\TestMonitor\ActiveCampaign\ActiveCampaign $client=null;
+    /** @var \TestMonitor\ActiveCampaign\ActiveCampaign|null */
+    private ?\TestMonitor\ActiveCampaign\ActiveCampaign $client = null;
 
     /**
      * ActiveCampaign constructor.
@@ -20,14 +20,16 @@ class ActiveCampaign extends AbstractService
         private string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_URL,
         private string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_KEY,
         private string $MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID,
-    ) {
+    )
+    {
         parent::__construct();
     }
 
     /**
      * @return \TestMonitor\ActiveCampaign\ActiveCampaign
      */
-    private function activeCampaignClient(): \TestMonitor\ActiveCampaign\ActiveCampaign {
+    private function activeCampaignClient(): \TestMonitor\ActiveCampaign\ActiveCampaign
+    {
         if ($this->client === null) {
             $this->client = new \TestMonitor\ActiveCampaign\ActiveCampaign(
                 $this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_URL,
@@ -43,7 +45,7 @@ class ActiveCampaign extends AbstractService
      * @return void
      * @throws Exception
      */
-    public function subscribe(string $email) : void
+    public function subscribe(string $email): void
     {
         $activeCampaignList = $this->activeCampaignClient()
             ->getList($this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID);
@@ -59,7 +61,8 @@ class ActiveCampaign extends AbstractService
      * @param string $email
      * @throws Exception
      */
-    public function unsubscribe(string $email) : void {
+    public function unsubscribe(string $email): void
+    {
         $activeCampaignList = $this->activeCampaignClient()
             ->getList($this->MINIMALISM_SERVICE_ACTIVECAMPAIGN_LISTID);
 
@@ -75,7 +78,7 @@ class ActiveCampaign extends AbstractService
      * @param string $tag
      * @throws Exception
      */
-    public function addTag(string $email, string $tag) : void
+    public function addTag(string $email, string $tag): void
     {
         $this->activeCampaignClient()->addTagsToContact(
             $this->getContact($email),
@@ -114,13 +117,4 @@ class ActiveCampaign extends AbstractService
             );
     }
 
-    /**
-     *
-     */
-    public function initialise(): void {}
-
-    /**
-     *
-     */
-    public function destroy(): void {}
 }
